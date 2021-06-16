@@ -3,7 +3,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    register(email: String!, password: String!): AuthenticateResponse!
+    register(email: String!, password: String!, username: String, fullname: String, avatar: String ): AuthenticateResponse!
 }
 type AuthenticateResponse {
     token: String!
