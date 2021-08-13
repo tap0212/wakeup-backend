@@ -7,4 +7,5 @@ node_modules
 # Cruft
 .DS_Store
 npm-debug.log
-.idea
+.idea.env
+.env
