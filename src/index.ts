@@ -1,24 +1,16 @@
 import 'dotenv/config'
-import { ApolloServer } from 'apollo-server-express'
+import { ApolloError, ApolloServer } from 'apollo-server-express'
 import { applyMiddleware } from "graphql-middleware"; 
 
 import express from 'express'
 import mongoose  from 'mongoose'
 import consola from 'consola'
-import expressJwt from "express-jwt"; 
-import authShield from './utils/authShield'
+import {authShield, validateToke} from './utils/authShield'
 import schema from './graphql/schemasMap'
 import * as Models from './models'
 
 const app = express()
 
-app.use(
-    expressJwt({
-      secret: process.env.SECRET as string,
-      algorithms: ["HS256"],
-      credentialsRequired: false
-    })
-  ); 
 const PORT = process.env.PORT
 
 const server = new ApolloServer({
@@ -26,8 +18,13 @@ const server = new ApolloServer({
         schema, authShield
     ),
     context:({ req }) => {
-        const user = req.user || null;
-       return { user, ...Models}
+        if(!req?.headers?.authorization){
+            return Models
+        }else{
+            validateToke(req?.headers?.authorization).then(user => {
+                return {user, Models}
+            })
+        }
     }
 })
 
